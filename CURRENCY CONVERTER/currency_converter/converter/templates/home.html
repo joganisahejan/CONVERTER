@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Currency Converter</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Flag icons -->
+  <link href="https://cdn.jsdelivr.net/npm/flag-icons@6.6.6/css/flag-icons.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #cce0ff, #ffffff);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      scroll-behavior: smooth;
+    }
+
+    .navbar {
+      background-color: #1a8be8;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .navbar .nav-link,
+    .navbar-brand {
+      color: #fff !important;
+      font-weight: 500;
+    }
+
+    .converter-box {
+      max-width: 550px;
+      margin: 40px auto;
+      background: #ffffffcc;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .converter-box h2 {
+      margin-bottom: 20px;
+      font-weight: bold;
+      color: #1a8be8;
+    }
+
+    .result {
+      margin-top: 15px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #1a8be8;
+    }
+
+    button {
+      background-color: #1a8be8;
+      border: none;
+      padding: 12px;
+      color: #fff;
+      border-radius: 8px;
+      width: 100%;
+      font-weight: 500;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #005bb5;
+    }
+
+    .swap-btn {
+      cursor: pointer;
+      color: #1a8be8;
+      font-weight: bold;
+    }
+
+    section {
+      padding: 50px 20px;
+    }
+
+    section h2 {
+      color: #1a8be8;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    /* Footer */
+    footer {
+      background: linear-gradient(135deg, #1a8be8, #005bb5);
+      color: #fff;
+      padding: 50px 0 25px;
+      margin-top: 60px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    footer h4 {
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+
+    footer p {
+      margin: 5px 0;
+      font-size: 15px;
+      opacity: 0.9;
+    }
+
+    footer a {
+      color: #fff;
+      text-decoration: none;
+      margin: 0 12px;
+      transition: color 0.3s ease, transform 0.3s ease;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    footer a:hover {
+      color: #ffd700;
+      transform: translateY(-2px);
+    }
+
+    footer .social-icons a {
+      display: inline-block;
+      width: 36px;
+      height: 36px;
+      line-height: 36px;
+      text-align: center;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      margin: 0 6px;
+      font-size: 16px;
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    footer .social-icons a:hover {
+      background: #ffd700;
+      color: #1a8be8;
+      transform: scale(1.1);
+    }
+
+    @media (max-width: 768px) {
+      footer {
+        text-align: center;
+      }
+
+      footer .col-md-6 {
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">💲 SenConverter</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#help">Help</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Spacer -->
+  <div style="margin-top: 80px;"></div>
+
+  <!-- Converter Box -->
+  <div class="converter-box text-center">
+    <h2>Enter Amount to Convert</h2>
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="mb-3">
+        <input type="number" step="any" name="amount" class="form-control" placeholder="Enter Amount"
+          value="{{ amount|default:'' }}" required>
+      </div>
+
+      <div class="row mb-3 align-items-center">
+        <div class="col">
+          <label>From</label>
+          <select name="from" class="form-select">
+            <option value="USD" {% if to_currency == "USD" %}selected{% endif %}>🇺🇸 USD</option>
+            <option value="EUR" {% if to_currency == "EUR" %}selected{% endif %}>🇪🇺 EUR</option>
+            <option value="INR" {% if to_currency == "INR" %}selected{% endif %}>🇮🇳 INR</option>
+            <option value="GBP" {% if to_currency == "GBP" %}selected{% endif %}>🇬🇧 GBP</option>
+
+          </select>
+        </div>
+        <div class="col d-flex align-items-center justify-content-center">
+          <span class="fs-3 swap-btn">⇄</span>
+        </div>
+        <div class="col">
+          <label>To</label>
+          <select name="to" class="form-select">
+            <option value="USD" {% if to_currency == "USD" %}selected{% endif %}>🇺🇸 USD</option>
+            <option value="EUR" {% if to_currency == "EUR" %}selected{% endif %}>🇪🇺 EUR</option>
+            <option value="INR" {% if to_currency == "INR" %}selected{% endif %}>🇮🇳 INR</option>
+            <option value="GBP" {% if to_currency == "GBP" %}selected{% endif %}>🇬🇧 GBP</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit">Convert</button>
+    </form>
+
+    {% if error_message %}
+    <div class="alert alert-danger mt-3">
+      {{ error_message }}
+    </div>
+    {% endif %}
+
+    {% if converted %}
+    <div class="result">
+      Converted: {{ symbol }} {{ converted|floatformat:2 }}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- About Section -->
+  <section id="about" class="container text-center">
+    <h2>About SenConverter</h2>
+    <p>
+      💲 <strong>SenConverter</strong> is your trusted companion for real-time currency conversion.
+      We understand that whether you are a frequent traveler, a student managing international tuition fees,
+      or a business professional dealing with global transactions — you need quick and accurate results.
+    </p>
+    <p>
+      🌍 Our platform fetches live exchange rates from reliable sources to ensure up-to-date accuracy.
+      Unlike complicated financial tools, SenConverter keeps things simple: just enter the amount, choose your
+      currencies, and get results instantly.
+    </p>
+    <p>
+      ⚡ With a clean design, mobile responsiveness, and secure backend integration, our mission is to make
+      currency conversion effortless for everyone. We believe finance tools should be <strong>fast, transparent, and
+        user-friendly</strong>.
+    </p>
+  </section>
+
+  <!-- Help Section -->
+  <section id="help" class="container text-center">
+    <h2>Help & FAQs</h2>
+    <p><strong>How does it work?</strong> Enter the amount, select currencies, and click convert.</p>
+    <p><strong>Is it free?</strong> ✅ Yes, SenConverter is 100% free to use.</p>
+    <p><strong>Data accuracy?</strong> 📊 We fetch live exchange rates from reliable financial APIs.</p>
+    <p><strong>Supported devices?</strong> Works on desktop, tablet, and mobile screens.</p>
+  </section>
+
+  <!-- Footer -->
+  <footer id="contact">
+    <div class="container">
+      <div class="row">
+
+        <!-- Left: Info -->
+        <div class="col-md-6 text-md-start text-center">
+          <h4>💲 SenConverter</h4>
+          <p>&copy; 2025 | Simplifying Currency Conversion</p>
+          <p>
+            <a href="#">Privacy Policy</a> |
+            <a href="#">Terms of Service</a>
+          </p>
+        </div>
+
+        <!-- Right: Social -->
+        <div class="col-md-6 d-flex flex-column justify-content-center text-md-end text-center">
+          <h5>Follow Us</h5>
+          <div class="social-icons mt-2">
+            <a href="#"><i class="bi bi-facebook"></i></a>
+            <a href="#"><i class="bi bi-twitter"></i></a>
+            <a href="#"><i class="bi bi-instagram"></i></a>
+            <a href="#"><i class="bi bi-linkedin"></i></a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Swap from/to currencies
+    document.querySelector('.swap-btn').addEventListener('click', function () {
+      let from = document.querySelector('select[name="from"]');
+      let to = document.querySelector('select[name="to"]');
+      let temp = from.value;
+      from.value = to.value;
+      to.value = temp;
+    });
+  </script>
+
+</body>
+
+</html>
